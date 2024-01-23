@@ -40,6 +40,10 @@ func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&params)
 
+	if err := params.Validate(); len(err) > 0 {
+		return c.JSON(err)
+	}
+
 	if err != nil {
 		return err
 	}
