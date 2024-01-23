@@ -33,16 +33,37 @@ func (h *UserHandler) HandleGetUserByID(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-func HandleGetUsers(c *fiber.Ctx) error {
-	users := []types.User{
-		{
-			FirstName: "Hmida",
-			LastName:  "Genawi",
-		},
-		{
-			FirstName: "Rabie",
-			LastName:  "Hasnawi",
-		},
+func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
+	var (
+		ctx  = context.Background()
+		user = new(types.User)
+	)
+
+	err := c.BodyParser(user)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := h.userStore.InsertUser(ctx, *user)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return c.JSON(res)
+
+}
+
+func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
+	var (
+		ctx = context.Background()
+	)
+
+	users, err := h.userStore.GetUsers(ctx)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return c.JSON(users)
