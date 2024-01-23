@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"log"
 
 	"github.com/aimensahnoun/hotel-booker/db"
 	"github.com/aimensahnoun/hotel-booker/types"
@@ -27,7 +26,7 @@ func (h *UserHandler) HandleGetUserByID(c *fiber.Ctx) error {
 	user, err := h.userStore.GetUserByID(ctx, id)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	return c.JSON(user)
@@ -42,13 +41,13 @@ func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
 	err := c.BodyParser(user)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	res, err := h.userStore.InsertUser(ctx, *user)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	return c.JSON(res)
@@ -63,7 +62,7 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	users, err := h.userStore.GetUsers(ctx)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	return c.JSON(users)

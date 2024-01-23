@@ -12,6 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var config = fiber.Config{
+
+	ErrorHandler: func(c *fiber.Ctx, err error) error {
+		return c.JSON(map[string]string{
+			"Error: ": err.Error(),
+		})
+	},
+}
+
 func main() {
 	listenAddr := flag.String("listenAddr", ":4321", "The port of the API server")
 	flag.Parse()
@@ -24,7 +33,7 @@ func main() {
 	// Init Mongo user Handler
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
 
-	app := fiber.New()
+	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/user/:id", userHandler.HandleGetUserByID)

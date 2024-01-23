@@ -6,6 +6,7 @@ import (
 
 	"github.com/aimensahnoun/hotel-booker/types"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -14,7 +15,7 @@ const userCol = "users"
 type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
 	InsertUser(context.Context, types.User) (*types.User, error)
-	GetUsers(context.Context) ([]*types.User, error)
+	GetUsers(context.Context) (*mongo.Cursor, error)
 }
 
 type MongoUserStore struct {
@@ -31,8 +32,15 @@ func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
 }
 
 func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
+
+	oid, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
 	var user types.User
-	err := s.col.FindOne(ctx, bson.M{"_id": ToObjectID(id)}).Decode(&user)
+	err = s.col.FindOne(ctx, bson.M{"_id": oid}).Decode(&user)
 
 	if err != nil {
 		return nil, err
@@ -62,15 +70,13 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user types.User) (*type
 
 }
 
-func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error) {
-	return []*types.User{
-		{
-			FirstName: "Hmida",
-			LastName:  "Genawi",
-		},
-		{
-			FirstName: "Rabie",
-			LastName:  "Hasnawi",
-		},
-	}, nil
+func (s *MongoUserStore) GetUsers(ctx context.Context) (*mongo.Cursor, error) {
+
+	res, err := s.col.Find(ctx, bson.D{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
