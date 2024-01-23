@@ -1,11 +1,11 @@
 build:
-	go build -o bin/api
+	@go build -o bin/api
 
 dev:
-	go run main.go
+	@go run main.go
 
-run:
-	./bin/api
+run: build
+	@./bin/api
 
 test:
-	go test -v ./...
+	@go test -v ./...
