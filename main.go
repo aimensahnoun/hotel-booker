@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 
+	"github.com/aimensahnoun/hotel-booker/api"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,13 +13,8 @@ func main() {
 	app := fiber.New()
 	apiv1 := app.Group("/api/v1")
 
-	apiv1.Get("/", randomGetter)
+	apiv1.Get("/user", api.HandleGetUsers)
+	apiv1.Get("/user/:id", api.HandleGetUserByID)
 	app.Listen(*listenAddr)
 
-}
-
-func randomGetter(c *fiber.Ctx) error {
-	return c.JSON(map[string]string{
-		"Random bullshit": "GO!",
-	})
 }
