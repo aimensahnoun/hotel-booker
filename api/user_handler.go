@@ -33,18 +33,24 @@ func (h *UserHandler) HandleGetUserByID(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
-	var (
-		ctx  = context.Background()
-		user = new(types.User)
-	)
 
-	err := c.BodyParser(user)
+	var ctx = context.Background()
+
+	var params types.InsertUserParams
+
+	err := c.BodyParser(&params)
 
 	if err != nil {
 		return err
 	}
 
-	res, err := h.userStore.InsertUser(ctx, *user)
+	user, err := types.NewUserFromParams(params)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := h.userStore.InsertUser(ctx, user)
 
 	if err != nil {
 		return err

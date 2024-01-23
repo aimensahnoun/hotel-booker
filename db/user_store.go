@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"log"
 
 	"github.com/aimensahnoun/hotel-booker/types"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,8 +13,8 @@ const userCol = "users"
 
 type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
-	InsertUser(context.Context, types.User) (*types.User, error)
-	GetUsers(context.Context) (*mongo.Cursor, error)
+	InsertUser(context.Context, *types.User) (*types.User, error)
+	GetUsers(context.Context) ([]*types.User, error)
 }
 
 type MongoUserStore struct {
@@ -50,33 +49,32 @@ func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.Use
 
 }
 
-func (s *MongoUserStore) InsertUser(ctx context.Context, user types.User) (*types.User, error) {
+func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {
 	res, err := s.col.InsertOne(ctx, user)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	insertedID, ok := res.InsertedID.(string)
-	if !ok {
-		log.Fatal("InsertedID is not a string")
-	}
-
-	return &types.User{
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		ID:        insertedID,
-	}, nil
-
-}
-
-func (s *MongoUserStore) GetUsers(ctx context.Context) (*mongo.Cursor, error) {
-
-	res, err := s.col.Find(ctx, bson.D{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	user.ID = res.InsertedID.(primitive.ObjectID)
+
+	return user, nil
+
+}
+
+func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error) {
+
+	cur, err := s.col.Find(ctx, bson.M{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*types.User
+
+	if err := cur.All(ctx, &users); err != nil {
+		return []*types.User{}, err
+	}
+
+	return users, nil
 }
