@@ -1,8 +1,6 @@
 package api
 
 import (
-	"context"
-
 	"github.com/aimensahnoun/hotel-booker/db"
 	"github.com/aimensahnoun/hotel-booker/types"
 	"github.com/gofiber/fiber/v2"
@@ -70,4 +68,18 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(users)
+}
+
+func (h *UserHandler) HandleDeleteuser(c *fiber.Ctx) error {
+	var (
+		ID = c.Params("id")
+	)
+
+	err := h.userStore.DeleteUser(c.Context(), ID)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON("User deleted")
 }

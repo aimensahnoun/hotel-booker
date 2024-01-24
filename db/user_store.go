@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 
 	"github.com/aimensahnoun/hotel-booker/types"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,6 +16,7 @@ type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
+	DeleteUser(context.Context, string) error
 }
 
 type MongoUserStore struct {
@@ -77,4 +79,24 @@ func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error) {
 	}
 
 	return users, nil
+}
+
+func (s *MongoUserStore) DeleteUser(ctx context.Context, ID string) error {
+	oid, err := primitive.ObjectIDFromHex(ID)
+
+	if err != nil {
+		return err
+	}
+
+	res, err := s.col.DeleteOne(ctx, bson.M{"_id": oid})
+
+	if err != nil {
+		return err
+	}
+
+	if res.DeletedCount == 0 {
+		return errors.New("User does not exist")
+	}
+
+	return nil
 }
