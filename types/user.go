@@ -15,6 +15,11 @@ var (
 	minPasswordLength  = 6
 )
 
+type UpdateUserParams struct {
+	FirstName string `bson:"firstName" json:"firstName"`
+	LastName  string `bson:"lastName" json:"lastName"`
+}
+
 type InsertUserParams struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
@@ -36,11 +41,28 @@ func (params InsertUserParams) Validate() map[string]string {
 		errors["password"] = fmt.Sprintf("Password must be at least %d characters", minLastNameLength)
 	}
 	if !isValidEmail(params.Email) {
-		errors["email"] = fmt.Sprintf("Email is invalid")
+		errors["email"] = "Email is invalid"
 	}
 
 	return errors
 
+}
+
+func (params UpdateUserParams) Validate() map[string]string {
+	errors := map[string]string{}
+
+	if params.FirstName == "" && params.LastName == "" {
+		errors["empty"] = "At least one of first name or last name must be present "
+	} else {
+		if params.FirstName != "" && len(params.FirstName) < minFirstNameLength {
+			errors["firstName"] = fmt.Sprintf("Firstname must be at least %d characters", minFirstNameLength)
+		}
+		if params.LastName != "" && len(params.LastName) < minLastNameLength {
+			errors["lastName"] = fmt.Sprintf("Last name must be at least %d characters", minLastNameLength)
+		}
+	}
+
+	return errors
 }
 
 func isValidEmail(email string) bool {
@@ -57,7 +79,7 @@ type User struct {
 }
 
 func NewUserFromParams(params InsertUserParams) (*User, error) {
-	encrypted, err := bcrypt.GenerateFromPassword([]byte(params.Password), 10)
+	encrypted, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcryptSale)
 
 	if err != nil {
 		return nil, err

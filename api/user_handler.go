@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/aimensahnoun/hotel-booker/db"
 	"github.com/aimensahnoun/hotel-booker/types"
 	"github.com/gofiber/fiber/v2"
@@ -82,4 +84,30 @@ func (h *UserHandler) HandleDeleteuser(c *fiber.Ctx) error {
 	}
 
 	return c.JSON("User deleted")
+}
+
+func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
+	var (
+		params types.UpdateUserParams
+		ID     = c.Params("id")
+	)
+
+	err := c.BodyParser(&params)
+
+	if err := params.Validate(); len(err) > 0 {
+		return c.JSON(err)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	res, err := h.userStore.UpdateUser(c.Context(), &params, ID)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(fmt.Sprintf("Updated user: %s", res))
+
 }

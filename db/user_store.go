@@ -17,6 +17,7 @@ type UserStore interface {
 	InsertUser(context.Context, *types.User) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	DeleteUser(context.Context, string) error
+	UpdateUser(context.Context, *types.UpdateUserParams, string) (primitive.ObjectID, error)
 }
 
 type MongoUserStore struct {
@@ -99,4 +100,28 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, ID string) error {
 	}
 
 	return nil
+}
+
+func (s *MongoUserStore) UpdateUser(ctx context.Context, values *types.UpdateUserParams, userId string) (primitive.ObjectID, error) {
+
+	oid, err := primitive.ObjectIDFromHex(userId)
+
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	res, err := s.col.UpdateOne(ctx, bson.M{"_id": oid}, bson.M{
+		"$set": values,
+	})
+
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	if res.MatchedCount == 0 {
+		return primitive.ObjectID{}, errors.New("User does not exist")
+	}
+
+	return oid, nil
+
 }
