@@ -16,8 +16,8 @@ var (
 )
 
 type UpdateUserParams struct {
-	FirstName string `bson:"firstName" json:"firstName"`
-	LastName  string `bson:"lastName" json:"lastName"`
+	FirstName string `bson:"firstName,omitempty" json:"firstName"`
+	LastName  string `bson:"lastName,omitempty" json:"lastName"`
 }
 
 type InsertUserParams struct {
