@@ -20,10 +20,9 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 
 func (h *UserHandler) HandleGetUserByID(c *fiber.Ctx) error {
 	var (
-		id  = c.Params("id")
-		ctx = context.Background()
+		id = c.Params("id")
 	)
-	user, err := h.userStore.GetUserByID(ctx, id)
+	user, err := h.userStore.GetUserByID(c.Context(), id)
 
 	if err != nil {
 		return err
@@ -33,8 +32,6 @@ func (h *UserHandler) HandleGetUserByID(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
-
-	var ctx = context.Background()
 
 	var params types.InsertUserParams
 
@@ -54,7 +51,7 @@ func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	res, err := h.userStore.InsertUser(ctx, user)
+	res, err := h.userStore.InsertUser(c.Context(), user)
 
 	if err != nil {
 		return err
@@ -65,11 +62,8 @@ func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
-	var (
-		ctx = context.Background()
-	)
 
-	users, err := h.userStore.GetUsers(ctx)
+	users, err := h.userStore.GetUsers(c.Context())
 
 	if err != nil {
 		return err
