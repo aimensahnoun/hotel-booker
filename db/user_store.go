@@ -107,7 +107,7 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, ID string) error {
 	}
 
 	if res.DeletedCount == 0 {
-		return errors.New("User does not exist")
+		return errors.New("user does not exist")
 	}
 
 	return nil
@@ -130,7 +130,7 @@ func (s *MongoUserStore) UpdateUser(ctx context.Context, values *types.UpdateUse
 	}
 
 	if res.MatchedCount == 0 {
-		return primitive.ObjectID{}, errors.New("User does not exist")
+		return primitive.ObjectID{}, errors.New("user does not exist")
 	}
 
 	return oid, nil
