@@ -56,10 +56,56 @@ const (
 	DeluxeRoomType
 )
 
+type InsertRoomParams struct {
+	Type    RoomType           `json:"type"`
+	Price   float64            `json:"price"`
+	HotelID primitive.ObjectID `json:"hotelID"`
+}
+
+func (r RoomType) String() string {
+	switch r {
+	case SingleRoomType:
+		return "Single room"
+	case DoubleRoomType:
+		return "Double room"
+	case SeaSideRoomType:
+		return "Sea side room"
+	case DeluxeRoomType:
+		return "Deluxe room"
+	default:
+		return "Unknown"
+	}
+}
+
+func (params *InsertRoomParams) Validate() map[string]string {
+	errors := map[string]string{}
+
+	if params.Type > DeluxeRoomType || params.Type < SingleRoomType {
+		errors["type"] = "Invalid room type"
+	}
+
+	if params.Price < 0 {
+		errors["price"] = "Invalid price"
+	}
+
+	if params.HotelID.IsZero() || len(params.HotelID) != 24 {
+		errors["hotelID"] = "Invalid hotel id"
+	}
+
+	return errors
+}
+
+func NewRoomFromParams(params *InsertRoomParams) *Room {
+	return &Room{
+		Type:    params.Type,
+		HotelID: params.HotelID,
+		Price:   params.Price,
+	}
+}
+
 type Room struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Type      RoomType           `bson:"type" json:"type"`
-	BasePrice float64            `bson:"basePrice" json:"basePrice"`
-	Price     float64            `bson:"price" json:"price"`
-	HotelID   primitive.ObjectID `bson:"hotelID" json:"hotelId"`
+	ID      primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Type    RoomType           `bson:"type" json:"type"`
+	Price   float64            `bson:"price" json:"price"`
+	HotelID primitive.ObjectID `bson:"hotelID" json:"hotelId"`
 }

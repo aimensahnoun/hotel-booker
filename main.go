@@ -32,7 +32,10 @@ func main() {
 
 	// Init Mongo handlers
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME))
-	hotelHandler := api.NewHotelHandler(db.NewMongoHotelStore(client, db.DBNAME))
+	hotelStore := db.NewMongoHotelStore(client, db.DBNAME)
+
+	hotelHandler := api.NewHotelHandler(hotelStore)
+	roomHandler := api.NewRoomHandler(db.NewMongoRoomStore(client, db.DBNAME, hotelStore))
 
 	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
@@ -46,6 +49,10 @@ func main() {
 
 	// Hotel
 	apiv1.Post("/hotel", hotelHandler.HandleInsertHotel)
+
+	// Room
+	apiv1.Post("/room", roomHandler.HandleInsertRooms)
+
 	app.Listen(*listenAddr)
 
 }
