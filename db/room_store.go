@@ -38,6 +38,8 @@ func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*typ
 
 	room.ID = res.InsertedID.(primitive.ObjectID)
 
+	s.hotelStore.AddHotelRoom(ctx, room.HotelID, room.ID)
+
 	return room, nil
 
 }

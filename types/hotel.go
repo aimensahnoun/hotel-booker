@@ -88,7 +88,7 @@ func (params *InsertRoomParams) Validate() map[string]string {
 		errors["price"] = "Invalid price"
 	}
 
-	if params.HotelID.IsZero() || len(params.HotelID) != 24 {
+	if params.HotelID.IsZero() || len(params.HotelID) != 12 {
 		errors["hotelID"] = "Invalid hotel id"
 	}
 

@@ -2,8 +2,11 @@ package db
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/aimensahnoun/hotel-booker/types"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -12,6 +15,7 @@ const hotelCol = "hotels"
 
 type HotelStore interface {
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
+	AddHotelRoom(context.Context, primitive.ObjectID, primitive.ObjectID) (string, error)
 }
 
 type MongoHotelStore struct {
@@ -36,5 +40,23 @@ func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (
 	hotel.ID = res.InsertedID.(primitive.ObjectID)
 
 	return hotel, nil
+
+}
+
+func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, hotelID primitive.ObjectID, roomID primitive.ObjectID) (string, error) {
+	filter := bson.M{"_id": hotelID}
+	update := bson.M{"$push": bson.M{"rooms": roomID}}
+
+	res, err := s.col.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return "", err
+	}
+
+	if res.MatchedCount == 0 {
+		return "", errors.New("hotel does not exist")
+	}
+
+	return fmt.Sprintf("Room %s has been added to hotel %s", roomID, hotelID), nil
 
 }
