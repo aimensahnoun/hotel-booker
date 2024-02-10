@@ -20,6 +20,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	client.Database(db.DBNAME).Drop(ctx)
+
 	hotelStore := db.NewMongoHotelStore(client, db.DBNAME)
 	roomStore := db.NewMongoRoomStore(client, db.DBNAME, hotelStore)
 

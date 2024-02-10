@@ -7,6 +7,7 @@ import (
 	"github.com/aimensahnoun/hotel-booker/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -70,7 +71,7 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 		return nil, err
 	}
 
-	user.ID = res.InsertedID.(primitive.ObjectID)
+	user.ID = res.InsertedID.(primitive.ObjectID).String()
 
 	return user, nil
 
