@@ -39,3 +39,17 @@ func (h *RoomHandler) HandleInsertRooms(c *fiber.Ctx) error {
 
 	return c.JSON(res)
 }
+
+func (h *RoomHandler) HanderGetRooms(c *fiber.Ctx) error {
+	var (
+		id = c.Params("id")
+	)
+
+	rooms, err := h.roomStore.GetRooms(c.Context(), id)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(rooms)
+}

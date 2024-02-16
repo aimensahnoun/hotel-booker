@@ -50,6 +50,7 @@ func main() {
 	apiv1.Post("/hotel", hotelHandler.HandleInsertHotel)
 	apiv1.Get("/hotel", hotelHandler.HandleGetAllHotels)
   apiv1.Get("/hotel/:id", hotelHandler.HandleGetHotelByID)
+  apiv1.Get("/hotel/:id/rooms", roomHandler.HanderGetRooms)
 
 	// Room
 	apiv1.Post("/room", roomHandler.HandleInsertRooms)

@@ -18,6 +18,7 @@ type HotelStore interface {
 	AddHotelRoom(context.Context, primitive.ObjectID, primitive.ObjectID) (string, error)
 	GetHotels(context.Context) ([]*types.Hotel, error)
   GetHotelByID(context.Context , string) (*types.Hotel , error)
+
 }
 
 type MongoHotelStore struct {
@@ -98,3 +99,5 @@ func (s *MongoHotelStore) GetHotelByID(ctx context.Context, ID string) (*types.H
 
   return &hotel , nil
 }
+
+

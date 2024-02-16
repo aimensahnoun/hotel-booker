@@ -105,6 +105,8 @@ func NewRoomFromParams(params *InsertRoomParams) *Room {
 	}
 }
 
+
+
 type Room struct {
 	ID      primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Type    string             `bson:"type" json:"type"`
