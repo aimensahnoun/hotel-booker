@@ -40,3 +40,14 @@ func (h *HotelHandler) HandleInsertHotel(c *fiber.Ctx) error {
 	return c.JSON(res)
 
 }
+
+func (h *HotelHandler) HandleGetAllHotels(c *fiber.Ctx) error {
+    hotels , err := h.hotelStore.GetHotels(c.Context()) 
+
+    if err != nil {
+      return err
+  }
+
+  return c.JSON(hotels)
+
+}

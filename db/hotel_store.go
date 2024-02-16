@@ -16,6 +16,7 @@ const hotelCol = "hotels"
 type HotelStore interface {
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	AddHotelRoom(context.Context, primitive.ObjectID, primitive.ObjectID) (string, error)
+  GetHotels(context.Context) ([]*types.Hotel, error)
 }
 
 type MongoHotelStore struct {
@@ -60,3 +61,21 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, hotelID primitive.Ob
 	return fmt.Sprintf("Room %s has been added to hotel %s", roomID, hotelID), nil
 
 }
+
+
+func (s *MongoHotelStore) GetHotels(ctx context.Context) ([]*types.Hotel , error) {
+  cur , err := s.col.Find(ctx, bson.M{})
+
+  if err != nil {
+    return nil ,err
+  }
+
+  var hotels []*types.Hotel
+
+  if err := cur.All(ctx, &hotels); err != nil {
+    return nil ,err
+  }
+
+  return hotels, nil
+
+} 
