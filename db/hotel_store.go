@@ -16,7 +16,8 @@ const hotelCol = "hotels"
 type HotelStore interface {
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	AddHotelRoom(context.Context, primitive.ObjectID, primitive.ObjectID) (string, error)
-  GetHotels(context.Context) ([]*types.Hotel, error)
+	GetHotels(context.Context) ([]*types.Hotel, error)
+  GetHotelByID(context.Context , string) (*types.Hotel , error)
 }
 
 type MongoHotelStore struct {
@@ -62,20 +63,38 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, hotelID primitive.Ob
 
 }
 
+func (s *MongoHotelStore) GetHotels(ctx context.Context) ([]*types.Hotel, error) {
+	cur, err := s.col.Find(ctx, bson.M{})
 
-func (s *MongoHotelStore) GetHotels(ctx context.Context) ([]*types.Hotel , error) {
-  cur , err := s.col.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	var hotels []*types.Hotel
+
+	if err := cur.All(ctx, &hotels); err != nil {
+		return nil, err
+	}
+
+	return hotels, nil
+
+}
+
+
+func (s *MongoHotelStore) GetHotelByID(ctx context.Context, ID string) (*types.Hotel, error){
+  oid , err := primitive.ObjectIDFromHex(ID)
+  
+  if err != nil {
+    return nil , err
+  }
+
+  var hotel types.Hotel
+
+  err = s.col.FindOne(ctx, bson.M{"_id" : oid}).Decode(&hotel)
 
   if err != nil {
     return nil ,err
   }
 
-  var hotels []*types.Hotel
-
-  if err := cur.All(ctx, &hotels); err != nil {
-    return nil ,err
-  }
-
-  return hotels, nil
-
-} 
+  return &hotel , nil
+}

@@ -42,12 +42,26 @@ func (h *HotelHandler) HandleInsertHotel(c *fiber.Ctx) error {
 }
 
 func (h *HotelHandler) HandleGetAllHotels(c *fiber.Ctx) error {
-    hotels , err := h.hotelStore.GetHotels(c.Context()) 
+	hotels, err := h.hotelStore.GetHotels(c.Context())
 
-    if err != nil {
-      return err
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(hotels)
+
+}
+
+
+func (h *HotelHandler) HandleGetHotelByID(c *fiber.Ctx) error {
+  id := c.Params("id")
+  
+  hotel , err := h.hotelStore.GetHotelByID(c.Context(), id)
+
+  if err != nil {
+    return err
   }
 
-  return c.JSON(hotels)
+  return c.JSON(hotel)
 
 }

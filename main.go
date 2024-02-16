@@ -49,6 +49,7 @@ func main() {
 	// Hotel
 	apiv1.Post("/hotel", hotelHandler.HandleInsertHotel)
 	apiv1.Get("/hotel", hotelHandler.HandleGetAllHotels)
+  apiv1.Get("/hotel/:id", hotelHandler.HandleGetHotelByID)
 
 	// Room
 	apiv1.Post("/room", roomHandler.HandleInsertRooms)
