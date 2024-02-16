@@ -12,9 +12,8 @@ var (
 )
 
 type InsertHotelParams struct {
-	Name     string  `json:"name"`
-	Location string  `json:"location"`
-	Rating   float32 `json:"rating"`
+	Name     string `json:"name"`
+	Location string `json:"location"`
 }
 
 func (params InsertHotelParams) Validate() map[string]string {
@@ -26,10 +25,6 @@ func (params InsertHotelParams) Validate() map[string]string {
 
 	if len(params.Location) < minHotelNameLength {
 		errors["location"] = fmt.Sprintf("Hotel location must be at least %d characters.", minLocationLength)
-	}
-
-	if params.Rating <= 0 {
-		errors["rating"] = "Invalid rating"
 	}
 
 	return errors
@@ -49,7 +44,7 @@ type Hotel struct {
 	Name     string               `bson:"name" json:"name"`
 	Location string               `bson:"location" json:"location"`
 	Rooms    []primitive.ObjectID `bson:"rooms" json:"rooms"`
-	Rating   float32              `bson:"rating" json:"rating"`
+  Rating float32 `bson:"rating" json:"rating"`
 }
 
 type RoomType int
