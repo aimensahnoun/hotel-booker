@@ -51,7 +51,7 @@ func main() {
 
 	// Auth
 	apiv1.Post("/auth/login", authHandler.HandleAuthenticateUser)
-  apiv1.Post("/auth/register",authHandler.HandleRegister)
+	apiv1.Post("/auth/register", authHandler.HandleRegister)
 
 	// User
 	apiv1.Get("/user/:id", userHandler.HandleGetUserByID)
@@ -67,6 +67,7 @@ func main() {
 
 	// Room
 	apiv1.Post("/room", roomHandler.HandleInsertRooms)
+	apiv1.Post("/room/:id/book", roomHandler.HandleBookRoom)
 
 	app.Listen(*listenAddr)
 }

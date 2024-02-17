@@ -34,7 +34,7 @@ func (h *AuthHandler) HandleAuthenticateUser(c *fiber.Ctx) error {
 	}
 
 	existingUser, err := h.userStore.GetUserByEmail(c.Context(), params.Email)
-	if err != nil || existingUser == nil{
+	if err != nil || existingUser == nil {
 		return fmt.Errorf("User does not exist")
 	}
 
@@ -46,8 +46,7 @@ func (h *AuthHandler) HandleAuthenticateUser(c *fiber.Ctx) error {
 		return fmt.Errorf("Invalid password")
 	}
 
-	jwtToken, err := middleware.GenerateJWT(params.Email)
-
+	jwtToken, err := middleware.GenerateJWT(params.Email, existingUser.ID)
 	if err != nil {
 		return err
 	}
@@ -68,9 +67,9 @@ func (h *AuthHandler) HandleRegister(c *fiber.Ctx) error {
 		return err
 	}
 
-	existingUser, _:= h.userStore.GetUserByEmail(c.Context(), params.Email)
+	existingUser, _ := h.userStore.GetUserByEmail(c.Context(), params.Email)
 
-  if existingUser != nil {
+	if existingUser != nil {
 		return fmt.Errorf("User already exists")
 	}
 
@@ -84,8 +83,7 @@ func (h *AuthHandler) HandleRegister(c *fiber.Ctx) error {
 		return err
 	}
 
-	jwtToken, err := middleware.GenerateJWT(params.Email)
-
+	jwtToken, err := middleware.GenerateJWT(params.Email, res.ID)
 	if err != nil {
 		return err
 	}

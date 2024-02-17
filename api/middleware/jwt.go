@@ -12,6 +12,7 @@ import (
 
 type Claims struct {
 	Email string `json:"email"`
+	ID    string `json:"id"`
 	jwt.StandardClaims
 }
 
@@ -34,21 +35,25 @@ func JWTAuthentication(c *fiber.Ctx) error {
 
 	println("Authenticated email:", claims.Email)
 
+	if time.Now().Unix() > claims.ExpiresAt {
+		return fmt.Errorf("Token expired")
+	}
 
-  if time.Now().Unix() > claims.ExpiresAt {
-    return fmt.Errorf("Token expired")
-  }
+	userID := claims.ID
+
+	c.Context().SetUserValue("id", userID)
 
 	return c.Next()
 }
 
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(email string, id string) (string, error) {
 	jwtSecret := []byte(os.Getenv("JWT_SECRET"))
 
 	expiration := time.Now().Add(7 * 24 * time.Hour)
 
 	claims := &Claims{
 		Email: email,
+		ID:    id,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expiration.Unix(),
 		},
@@ -57,7 +62,6 @@ func GenerateJWT(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString(jwtSecret)
-
 	if err != nil {
 		return "", err
 	}
@@ -66,9 +70,13 @@ func GenerateJWT(email string) (string, error) {
 }
 
 func parseJWT(tokenString string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&Claims{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("JWT_SECRET")), nil
+		},
+	)
 	if err != nil {
 		return nil, err
 	}

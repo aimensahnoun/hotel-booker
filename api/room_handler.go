@@ -1,9 +1,12 @@
 package api
 
 import (
+	"fmt"
+
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/aimensahnoun/hotel-booker/db"
 	"github.com/aimensahnoun/hotel-booker/types"
-	"github.com/gofiber/fiber/v2"
 )
 
 type RoomHandler struct {
@@ -17,9 +20,7 @@ func NewRoomHandler(roomStore db.RoomStore) *RoomHandler {
 }
 
 func (h *RoomHandler) HandleInsertRooms(c *fiber.Ctx) error {
-	var (
-		params types.InsertRoomParams
-	)
+	var params types.InsertRoomParams
 
 	if err := c.BodyParser(&params); err != nil {
 		return c.JSON(err)
@@ -32,7 +33,6 @@ func (h *RoomHandler) HandleInsertRooms(c *fiber.Ctx) error {
 	room := types.NewRoomFromParams(&params)
 
 	res, err := h.roomStore.InsertRoom(c.Context(), room)
-
 	if err != nil {
 		c.JSON(err)
 	}
@@ -41,15 +41,19 @@ func (h *RoomHandler) HandleInsertRooms(c *fiber.Ctx) error {
 }
 
 func (h *RoomHandler) HanderGetRooms(c *fiber.Ctx) error {
-	var (
-		id = c.Params("id")
-	)
+	id := c.Params("id")
 
 	rooms, err := h.roomStore.GetRooms(c.Context(), id)
-
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(rooms)
+}
+
+func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
+	userID := c.Context().UserValue("id")
+
+	fmt.Println("User id from context :", userID)
+	return nil
 }
