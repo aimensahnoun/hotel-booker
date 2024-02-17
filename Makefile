@@ -2,7 +2,7 @@ build:
 	@go build -o bin/api
 
 dev:
-	@go run main.go
+	@air
 
 run: build
 	@./bin/api
