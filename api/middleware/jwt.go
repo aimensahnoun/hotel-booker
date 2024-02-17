@@ -34,6 +34,11 @@ func JWTAuthentication(c *fiber.Ctx) error {
 
 	println("Authenticated email:", claims.Email)
 
+
+  if time.Now().Unix() > claims.ExpiresAt {
+    return fmt.Errorf("Token expired")
+  }
+
 	return c.Next()
 }
 

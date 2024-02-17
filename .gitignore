@@ -1,3 +1,4 @@
 bin
 .null-ls*
+temp
 .env
