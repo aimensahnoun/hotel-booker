@@ -16,7 +16,7 @@ var (
 
 type UpdateUserParams struct {
 	FirstName string `bson:"firstName,omitempty" json:"firstName"`
-	LastName  string `bson:"lastName,omitempty" json:"lastName"`
+	LastName  string `bson:"lastName,omitempty"  json:"lastName"`
 }
 
 type InsertUserParams struct {
@@ -26,25 +26,52 @@ type InsertUserParams struct {
 	Password  string `json:"password"`
 }
 
-func (params InsertUserParams) Validate() map[string]string {
+type AuthenticateUserParams struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
+func (params AuthenticateUserParams) Validate() map[string]string {
 	errors := map[string]string{}
-
-	if len(params.FirstName) < minFirstNameLength {
-		errors["firstName"] = fmt.Sprintf("Firstname must be at least %d characters", minFirstNameLength)
-	}
-	if len(params.LastName) < minLastNameLength {
-		errors["lastName"] = fmt.Sprintf("Last name must be at least %d characters", minLastNameLength)
-	}
 	if len(params.Password) < minPasswordLength {
-		errors["password"] = fmt.Sprintf("Password must be at least %d characters", minLastNameLength)
+		errors["password"] = fmt.Sprintf(
+			"Password must be at least %d characters",
+			minLastNameLength,
+		)
 	}
 	if !isValidEmail(params.Email) {
 		errors["email"] = "Email is invalid"
 	}
 
 	return errors
+}
 
+func (params InsertUserParams) Validate() map[string]string {
+	errors := map[string]string{}
+
+	if len(params.FirstName) < minFirstNameLength {
+		errors["firstName"] = fmt.Sprintf(
+			"Firstname must be at least %d characters",
+			minFirstNameLength,
+		)
+	}
+	if len(params.LastName) < minLastNameLength {
+		errors["lastName"] = fmt.Sprintf(
+			"Last name must be at least %d characters",
+			minLastNameLength,
+		)
+	}
+	if len(params.Password) < minPasswordLength {
+		errors["password"] = fmt.Sprintf(
+			"Password must be at least %d characters",
+			minLastNameLength,
+		)
+	}
+	if !isValidEmail(params.Email) {
+		errors["email"] = "Email is invalid"
+	}
+
+	return errors
 }
 
 func (params UpdateUserParams) Validate() map[string]string {
@@ -70,17 +97,15 @@ func isValidEmail(email string) bool {
 }
 
 type User struct {
-	ID                string `bson:"_id,omitempty" json:"id,omitempty"`
-	FirstName         string `bson:"firstName" json:"firstName"`
-	LastName          string `bson:"lastName" json:"lastName"`
-	Email             string `bson:"email" json:"email"`
+	ID                string `bson:"_id,omitempty"     json:"id,omitempty"`
+	FirstName         string `bson:"firstName"         json:"firstName"`
+	LastName          string `bson:"lastName"          json:"lastName"`
+	Email             string `bson:"email"             json:"email"`
 	EncryptedPassword string `bson:"encryptedPassword" json:"-"`
 }
 
 func NewUserFromParams(params InsertUserParams) (*User, error) {
-
 	encrypted, err := EncryptPassword(params.Password)
-
 	if err != nil {
 		return nil, err
 	}
