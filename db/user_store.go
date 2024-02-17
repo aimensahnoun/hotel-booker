@@ -25,6 +25,7 @@ type UserStore interface {
 	GetUsers(context.Context) ([]*types.User, error)
 	DeleteUser(context.Context, string) error
 	UpdateUser(context.Context, *types.UpdateUserParams, string) (primitive.ObjectID, error)
+  AuthenticateUser(context.Context ) error
 }
 
 type MongoUserStore struct {
@@ -136,4 +137,11 @@ func (s *MongoUserStore) UpdateUser(ctx context.Context, values *types.UpdateUse
 
 	return oid, nil
 
+}
+
+
+func (s *MongoUserStore) AuthenticateUser(ctx context.Context) error {
+  println("User authenticated")
+  
+  return nil
 }

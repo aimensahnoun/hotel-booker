@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/aimensahnoun/hotel-booker/api"
+	"github.com/aimensahnoun/hotel-booker/api/middleware"
 	"github.com/aimensahnoun/hotel-booker/db"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,7 +27,7 @@ func main() {
 	flag.Parse()
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
-	if err != nil {
+if err != nil {
 		log.Fatal(err)
 	}
 
@@ -37,9 +38,14 @@ func main() {
 		hotelHandler = api.NewHotelHandler(hotelStore)
 		roomHandler  = api.NewRoomHandler(db.NewMongoRoomStore(client, db.DBNAME, hotelStore))
 		app          = fiber.New(config)
-		apiv1        = app.Group("/api/v1")
+		apiv1        = app.Group("/api/v1", middleware.JWTAuthentication)
 	)
-	// User
+
+
+  // Auth
+  apiv1.Get("/auth/login", userHandler.HandleAuthenticateUser)
+
+  // User
 	apiv1.Get("/user/:id", userHandler.HandleGetUserByID)
 	apiv1.Post("/user", userHandler.HandleInsertUser)
 	apiv1.Get("/user", userHandler.HandleGetUsers)

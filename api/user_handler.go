@@ -111,3 +111,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 	return c.JSON(fmt.Sprintf("Updated user: %s", res))
 
 }
+
+func (h *UserHandler) HandleAuthenticateUser(c *fiber.Ctx) error {
+  return c.JSON("Authenticated")
+}
