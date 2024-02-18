@@ -44,9 +44,10 @@ var RoomTypes = map[string]bool{
 }
 
 type Room struct {
-	ID      string  `bson:"_id,omitempty" json:"id,omitempty"`
-	Type    string  `bson:"type"          json:"type"`
-	SeaSide bool    `bson:"seaside"       json:"seaside"`
-	Price   float64 `bson:"price"         json:"price"`
-	HotelID string  `bson:"hotelID"       json:"hotelId"`
+	ID       string   `bson:"_id,omitempty" json:"id,omitempty"`
+	Type     string   `bson:"type"          json:"type"`
+	SeaSide  bool     `bson:"seaside"       json:"seaside"`
+	Price    float64  `bson:"price"         json:"price"`
+	HotelID  string   `bson:"hotelID"       json:"hotelId"`
+	Bookings []string `bson:"bookings"      json:"bookings"`
 }
