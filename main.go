@@ -40,11 +40,20 @@ func main() {
 	// Init Mongo handlers
 	var (
 		userStore    = db.NewMongoUserStore(client, db.DBNAME)
-		userHandler  = api.NewUserHandler(userStore)
-		authHandler  = api.NewAuthHandler(userStore)
 		hotelStore   = db.NewMongoHotelStore(client, db.DBNAME)
-		hotelHandler = api.NewHotelHandler(hotelStore)
-		roomHandler  = api.NewRoomHandler(db.NewMongoRoomStore(client, db.DBNAME, hotelStore))
+		roomStore    = db.NewMongoRoomStore(client, db.DBNAME, hotelStore)
+		bookingStore = db.NewMongoBookingStore(client, db.DBNAME, roomStore)
+		store        = db.Store{
+			UserStore:    userStore,
+			HotelStore:   hotelStore,
+			RoomStore:    roomStore,
+			BookingStore: bookingStore,
+		}
+
+		userHandler  = api.NewUserHandler(store)
+		authHandler  = api.NewAuthHandler(store)
+		hotelHandler = api.NewHotelHandler(store)
+		roomHandler  = api.NewRoomHandler(store)
 		app          = fiber.New(config)
 		apiv1        = app.Group("/api/v1", middleware.JWTAuthentication)
 	)

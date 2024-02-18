@@ -10,12 +10,12 @@ import (
 )
 
 type RoomHandler struct {
-	roomStore db.RoomStore
+	store db.Store
 }
 
-func NewRoomHandler(roomStore db.RoomStore) *RoomHandler {
+func NewRoomHandler(store db.Store) *RoomHandler {
 	return &RoomHandler{
-		roomStore: roomStore,
+		store: store,
 	}
 }
 
@@ -32,7 +32,7 @@ func (h *RoomHandler) HandleInsertRooms(c *fiber.Ctx) error {
 
 	room := types.NewRoomFromParams(&params)
 
-	res, err := h.roomStore.InsertRoom(c.Context(), room)
+	res, err := h.store.RoomStore.InsertRoom(c.Context(), room)
 	if err != nil {
 		c.JSON(err)
 	}
@@ -43,7 +43,7 @@ func (h *RoomHandler) HandleInsertRooms(c *fiber.Ctx) error {
 func (h *RoomHandler) HanderGetRooms(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	rooms, err := h.roomStore.GetRooms(c.Context(), id)
+	rooms, err := h.store.RoomStore.GetRooms(c.Context(), id)
 	if err != nil {
 		return err
 	}

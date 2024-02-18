@@ -12,12 +12,12 @@ import (
 )
 
 type AuthHandler struct {
-	userStore db.UserStore
+	store db.Store
 }
 
-func NewAuthHandler(userStore db.UserStore) *AuthHandler {
+func NewAuthHandler(store db.Store) *AuthHandler {
 	return &AuthHandler{
-		userStore: userStore,
+		store: store,
 	}
 }
 
@@ -33,7 +33,7 @@ func (h *AuthHandler) HandleAuthenticateUser(c *fiber.Ctx) error {
 		return c.JSON(err)
 	}
 
-	existingUser, err := h.userStore.GetUserByEmail(c.Context(), params.Email)
+	existingUser, err := h.store.UserStore.GetUserByEmail(c.Context(), params.Email)
 	if err != nil || existingUser == nil {
 		return fmt.Errorf("User does not exist")
 	}
@@ -67,7 +67,7 @@ func (h *AuthHandler) HandleRegister(c *fiber.Ctx) error {
 		return err
 	}
 
-	existingUser, _ := h.userStore.GetUserByEmail(c.Context(), params.Email)
+	existingUser, _ := h.store.UserStore.GetUserByEmail(c.Context(), params.Email)
 
 	if existingUser != nil {
 		return fmt.Errorf("User already exists")
@@ -78,7 +78,7 @@ func (h *AuthHandler) HandleRegister(c *fiber.Ctx) error {
 		return err
 	}
 
-	res, err := h.userStore.InsertUser(c.Context(), user)
+	res, err := h.store.UserStore.InsertUser(c.Context(), user)
 	if err != nil {
 		return err
 	}

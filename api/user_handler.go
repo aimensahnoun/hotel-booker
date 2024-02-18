@@ -3,27 +3,25 @@ package api
 import (
 	"fmt"
 
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/aimensahnoun/hotel-booker/db"
 	"github.com/aimensahnoun/hotel-booker/types"
-	"github.com/gofiber/fiber/v2"
 )
 
 type UserHandler struct {
-	userStore db.UserStore
+	store db.Store
 }
 
-func NewUserHandler(userStore db.UserStore) *UserHandler {
+func NewUserHandler(store db.Store) *UserHandler {
 	return &UserHandler{
-		userStore: userStore,
+		store: store,
 	}
 }
 
 func (h *UserHandler) HandleGetUserByID(c *fiber.Ctx) error {
-	var (
-		id = c.Params("id")
-	)
-	user, err := h.userStore.GetUserByID(c.Context(), id)
-
+	id := c.Params("id")
+	user, err := h.store.UserStore.GetUserByID(c.Context(), id)
 	if err != nil {
 		return err
 	}
@@ -31,12 +29,8 @@ func (h *UserHandler) HandleGetUserByID(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-
-
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
-
-	users, err := h.userStore.GetUsers(c.Context())
-
+	users, err := h.store.UserStore.GetUsers(c.Context())
 	if err != nil {
 		return err
 	}
@@ -45,12 +39,9 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleDeleteuser(c *fiber.Ctx) error {
-	var (
-		ID = c.Params("id")
-	)
+	ID := c.Params("id")
 
-	err := h.userStore.DeleteUser(c.Context(), ID)
-
+	err := h.store.UserStore.DeleteUser(c.Context(), ID)
 	if err != nil {
 		return err
 	}
@@ -74,14 +65,10 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	res, err := h.userStore.UpdateUser(c.Context(), &params, ID)
-
+	res, err := h.store.UserStore.UpdateUser(c.Context(), &params, ID)
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(fmt.Sprintf("Updated user: %s", res))
-
 }
-
-

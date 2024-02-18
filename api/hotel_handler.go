@@ -1,18 +1,19 @@
 package api
 
 import (
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/aimensahnoun/hotel-booker/db"
 	"github.com/aimensahnoun/hotel-booker/types"
-	"github.com/gofiber/fiber/v2"
 )
 
 type HotelHandler struct {
-	hotelStore db.HotelStore
+	store db.Store
 }
 
-func NewHotelHandler(hotelStore db.HotelStore) *HotelHandler {
+func NewHotelHandler(store db.Store) *HotelHandler {
 	return &HotelHandler{
-		hotelStore: hotelStore,
+		store: store,
 	}
 }
 
@@ -20,7 +21,6 @@ func (h *HotelHandler) HandleInsertHotel(c *fiber.Ctx) error {
 	var params types.InsertHotelParams
 
 	err := c.BodyParser(&params)
-
 	if err != nil {
 		return c.JSON(err)
 	}
@@ -31,37 +31,30 @@ func (h *HotelHandler) HandleInsertHotel(c *fiber.Ctx) error {
 
 	hotel := types.NewHotelFromParams(&params)
 
-	res, err := h.hotelStore.InsertHotel(c.Context(), hotel)
-
+	res, err := h.store.HotelStore.InsertHotel(c.Context(), hotel)
 	if err != nil {
 		return c.JSON(err)
 	}
 
 	return c.JSON(res)
-
 }
 
 func (h *HotelHandler) HandleGetAllHotels(c *fiber.Ctx) error {
-	hotels, err := h.hotelStore.GetHotels(c.Context())
-
+	hotels, err := h.store.HotelStore.GetHotels(c.Context())
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(hotels)
-
 }
 
-
 func (h *HotelHandler) HandleGetHotelByID(c *fiber.Ctx) error {
-  id := c.Params("id")
-  
-  hotel , err := h.hotelStore.GetHotelByID(c.Context(), id)
+	id := c.Params("id")
 
-  if err != nil {
-    return err
-  }
+	hotel, err := h.store.HotelStore.GetHotelByID(c.Context(), id)
+	if err != nil {
+		return err
+	}
 
-  return c.JSON(hotel)
-
+	return c.JSON(hotel)
 }
